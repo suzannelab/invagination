@@ -7,13 +7,13 @@ This is a mesoderm invagination simulation package for the article:
 
 **Epithelio-mesenchymal transition generates an apico-basal driving force required for tissue remodeling**
 
-Mélanie Gracia<sup>1</sup>, Corinne Benassayag<sup>1</sup>, Sophie Theis<sup>1, 2</sup>, Amsha Proag<sup>1</sup>, Guillaume Gay<sup>2</sup> and Magali Suzanne<sup>1</sup>
+Mélanie Gracia <sup>1</sup>, Corinne Benassayag <sup>1</sup>, Sophie Theis <sup>1, 2</sup>, Amsha Proag <sup>1</sup>, Guillaume Gay <sup>2</sup> and Magali Suzanne <sup>1</sup>
 
 <sup>1</sup> LBCMCP, Centre de Biologie Intégrative (CBI), Université de Toulouse, CNRS, UPS, France
 
 <sup>2</sup>  Morphogénie Logiciels, 32110 St Martin d’Armagnac, France
 
-The article currently under revision.
+The article is currently under revision.
 
 ## Dependencies
 

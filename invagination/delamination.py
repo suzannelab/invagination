@@ -180,7 +180,8 @@ def check_enter_in_process(sheet, manager,
     and add to the manager with it's process.
     """
     for f in mesoderm:
-        if enter_in_process(sheet, f, base, amp, largeur, density_proba):
+        if enter_in_process(sheet, f, base, amp,
+                            largeur, density_proba):
             manager.append(delamination, f,
                            kwargs=sheet.settings['delamination'])
 
@@ -219,13 +220,11 @@ def enter_in_process(sheet, f, base=0.003, amp=0.5, width=2.5, n=6):
     return False
 
 
-def define_ovoid_mesoderm(sheet, a=145., b=40.,
-                            coords=['x', 'z', 'y']):
+def define_mesoderm(sheet, a=145., b=40.,
+                    coords=['x', 'z', 'y']):
     """
     Define an oval area that will become the mesoderm.
 
-    u: x-position of the center
-    v: y-position of the center
     a: radius on the first-axis
     b: radius on the second-axis
     """
@@ -239,5 +238,6 @@ def define_ovoid_mesoderm(sheet, a=145., b=40.,
     sheet.face_df['is_mesoderm'] = (rayon <= 1) & (height > 0)
 
     # Remove not active face
-    face_not_active = sheet.edge_df[~sheet.edge_df.is_active].face.unique()
+    face_not_active = sheet.edge_df[
+        ~sheet.edge_df.is_active.astype(bool)].face.unique()
     sheet.face_df.loc[face_not_active, 'is_mesoderm'] = False

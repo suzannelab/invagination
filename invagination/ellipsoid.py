@@ -34,6 +34,10 @@ class EllipsoidGeometry(SheetGeometry):
         SheetGeometry.update_height(eptm)
 
     @staticmethod
+    def update_vol(eptm):
+        BulkGeometry.update_vol(eptm)
+
+    @staticmethod
     def scale(eptm, scale, coords):
         SheetGeometry.scale(eptm, scale, coords)
         eptm.settings['abc'] = [u * scale for u in eptm.settings['abc']]
