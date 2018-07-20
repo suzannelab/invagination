@@ -1,6 +1,7 @@
 """
 Some basic plot function
 """
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -8,6 +9,9 @@ import matplotlib.gridspec as gridspec
 import tyssue
 from tyssue.draw.plt_draw import quick_edge_draw, sheet_view
 from tyssue.config.draw import sheet_spec
+from invagination.toolbox import (open_sheet,
+                                  force_ratio,
+                                  define_time_max_depth)
 
 draw_specs = tyssue.config.draw.sheet_spec()
 
@@ -163,7 +167,6 @@ def three_axis_sheet_view(sheet, face_mask=None):
                      'ms': 5,
                      'color': 'red'}
 
-
     plt.figure(figsize=(18.5, 10.5))
     grid = gridspec.GridSpec(2, 2)
     axes_1 = plt.subplot(grid[0, 0])
@@ -174,7 +177,7 @@ def three_axis_sheet_view(sheet, face_mask=None):
     titles = ['lateral view', 'ventral view', 'sagittal view']
     axes = [axes_1, axes_2, axes_3]
 
-    for coords, title, ax in zip(coords, titles, axes):
+    for coords, title, ax in zip(coord_pairs, titles, axes):
         u, v = coords
         fig, ax = quick_edge_draw(sheet,
                                   coords=coords,
@@ -183,7 +186,7 @@ def three_axis_sheet_view(sheet, face_mask=None):
 
         ax.plot(sheet_mesoderm.face_df[u],
                 sheet_mesoderm.face_df[v],
-                scatter_specs)
+                'o', **scatter_specs)
 
         ax.set_title(title)
         ax.set_xlabel(u)
@@ -192,6 +195,7 @@ def three_axis_sheet_view(sheet, face_mask=None):
 
 
 def save_ventral_plot(dirname, start=0, step=5, max_area=50,
+                      face_caracteristic='area',
                       face_color='viridis', edge_color='bwr',
                       edge_normalization=1):
 
@@ -209,9 +213,9 @@ def save_ventral_plot(dirname, start=0, step=5, max_area=50,
         sheet = open_sheet(dirname, t)
         sub_sheet = sheet.extract_bounding_box(y_boundary=[0, 100])
 
-        fig, ax = color_info_view(sub_sheet, 'area', face_color, max_area,
-                                  'is_mesoderm', edge_color, ['z', 'x'],
-                                  normalization = edge_normalization)
+        fig, ax = color_info_view(sub_sheet, face_caracteristic, face_color,
+                                  max_area, 'is_mesoderm', edge_color,
+                                  ['z', 'x'], normalization=edge_normalization)
 
         fig.set_size_inches(18.5, 10.5, forward=True)
 

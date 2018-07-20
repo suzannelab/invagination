@@ -5,6 +5,7 @@ import os
 import warnings
 import math
 import numpy as np
+import pandas as pd
 
 
 from tyssue import Sheet, config
@@ -51,7 +52,10 @@ def define_depth(directory, t, coord=['x', 'y'],
     """
 
     sheet = open_sheet(directory, t)
-    sheet_mesoderm = sheet.extract('is_mesoderm')
+    try:
+        sheet_mesoderm = sheet.extract('is_mesoderm')
+    except:
+        sheet_mesoderm = sheet.extract('is_fold_patch')
     subset_mesoderm_face_df = sheet_mesoderm.face_df[
         (sheet_mesoderm.face_df[coord[0]] > xmin) &
         (sheet_mesoderm.face_df[coord[0]] < xmax) &
@@ -71,7 +75,7 @@ def define_time_max_depth(directory, nb_t=500):
 
     depths = []
     for t in range(0, nb_t):
-        try :
+        try:
             depths.append(depth_0 - define_depth(directory, t, ['z', 'x']))
         except Exception:
             depths.append(0)
@@ -105,7 +109,36 @@ def force_ratio(sheet, critical_area=5):
     pulling_faces = sheet.face_df[
         (sheet.face_df.area < critical_area) &
         (sheet.face_df.is_mesoderm)].index
-    contraction = sheet.face_df.loc[pulling_faces].eval('perimeter * contractility')
+    contraction = sheet.face_df.loc[
+        pulling_faces].eval('perimeter * contractility')
     tension = sheet.vert_df.radial_tension
     ratio = tension.sum() / contraction.sum()
     return ratio
+
+
+def face_centered_patch(sheet, face, neighbour_order):
+
+    faces = sheet.get_neighborhood(face, order=neighbour_order)['face']
+    edges = sheet.edge_df[sheet.edge_df['face'].isin(faces)]
+
+    vertices = sheet.vert_df.loc[set(edges['srce'])]
+    pos = vertices[sheet.coords].values - \
+        vertices[sheet.coords].mean(axis=0).values[None, :]
+    u, v, rotation = np.linalg.svd(pos, full_matrices=False)
+    rot_pos = pd.DataFrame(np.dot(pos, rotation.T),
+                           index=vertices.index,
+                           columns=sheet.coords)
+
+    patch_dset = {'vert': rot_pos,
+                  'face': sheet.face_df.loc[faces].copy(),
+                  'edge': edges.copy()}
+
+    patch = Sheet('patch', patch_dset, sheet.specs)
+    patch.reset_index()
+    return patch
+
+#patch = face_centered_patch(sheet, 190, 2)
+#fig, ax = sheet_view(patch, mode='quick', coords=['x', 'y'])
+#    patch = face_centered_patch(sheet, 53, 2)
+#    fig, ax = quick_edge_draw(patch, ['x', 'y'],
+#                              alpha=0.7)
