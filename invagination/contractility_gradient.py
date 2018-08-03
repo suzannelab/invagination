@@ -5,11 +5,13 @@ Contractility gradient behavior in a 2.5D sheet
 
 import random
 import numpy as np
+import math
 
 from tyssue import SheetGeometry
 from tyssue.behaviors.sheet_events import (contract,
                                            ab_pull)
-from invagination.delamination import contraction_neighbours
+from invagination.delamination import (contraction_neighbours,
+                                       relaxation)
 
 
 def constriction(sheet, manager, face_id,
@@ -22,8 +24,9 @@ def constriction(sheet, manager, face_id,
                  critical_area_neighbors=10,
                  contract_span=2,
                  basal_contract_rate=1.001,
-                 geom=SheetGeometry,
-                 can_pull=True):
+                 current_traction=0,
+                 max_traction=30,
+                 geom=SheetGeometry):
 
     face = sheet.idx_lookup(face_id, 'face')
     if face is None:
@@ -45,17 +48,27 @@ def constriction(sheet, manager, face_id,
                 neighbors['id'] = sheet.face_df.loc[
                     neighbors.face, 'id'].values
 
+                # remove cell which are not mesoderm
+                ectodermal_cell = sheet.face_df.loc[neighbors.face][
+                    sheet.face_df.loc[
+                        neighbors.face].is_mesoderm == False].id.values
+
+                neighbors = neighbors.drop(
+                    neighbors[neighbors.face.isin(ectodermal_cell)].index)
+
                 manager.extend([
                     (contraction_neighbours, neighbor['id'],
-                     (-((basal_contract_rate - contract_rate) / contract_span) *
+                     (-((contract_rate - basal_contract_rate) / contract_span) *
                       neighbor['order'] + contract_rate,
                       critical_area, 50))  # TODO: check this
                     for _, neighbor in neighbors.iterrows()
                 ])
-        if can_pull:
-            proba_tension = np.exp(-face_area / critical_area)
-            aleatory_number = random.uniform(0, 1)
-            if aleatory_number < proba_tension:
+
+        proba_tension = np.exp(-face_area / critical_area)
+        aleatory_number = random.uniform(0, 1)
+        if (current_traction < max_traction):
+            if (aleatory_number < proba_tension):
+                current_traction = current_traction + 1
                 ab_pull(sheet, face, radial_tension, True)
 
     manager.append(constriction, face_id,
@@ -69,20 +82,10 @@ def constriction(sheet, manager, face_id,
                         'critical_area_neighbors'],
                     sheet.settings['delamination']['contract_span'],
                     sheet.settings['delamination']['basal_contract_rate'],
-                    sheet.settings['delamination']['geom'],
-                    sheet.settings['delamination']['can_pull']
+                    current_traction,
+                    max_traction,
+                    sheet.settings['delamination']['geom']
                     ))
-
-
-def relaxation(sheet, face, contractility_decrease):
-
-    initial_contractility = 1.12
-    new_contractility = sheet.face_df.loc[
-        face, 'contractility'] / contractility_decrease
-
-    if new_contractility >= (initial_contractility / 2):
-        sheet.face_df.loc[face, 'contractility'] = new_contractility
-        sheet.face_df.loc[face, 'prefered_area'] *= contractility_decrease
 
 
 def increase_linear_tension(sheet, face, line_tension, geom=SheetGeometry):

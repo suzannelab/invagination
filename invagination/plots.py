@@ -294,7 +294,7 @@ def panel_sagittal_view(directory, df, ax=None):
     else:
         fig = ax.get_figure()
 
-    t, d = define_time_max_depth(directory)
+    t, d = define_time_max_depth(directory, 200)
     df.loc[str(directory).split('/')[-1], 'time'] = t
     df.loc[str(directory).split('/')[-1], 'depth'] = d
 
