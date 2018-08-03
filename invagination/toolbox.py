@@ -67,7 +67,7 @@ def define_depth(directory, t, coord=['x', 'y'],
     return depth
 
 
-def define_time_max_depth(directory, nb_t=500):
+def define_time_max_depth(directory, nb_t=200):
     """Define time and depth where the depths
     is maximal in a directory
     """
@@ -86,7 +86,7 @@ def define_time_max_depth(directory, nb_t=500):
     return time, max(depths)
 
 
-def define_time_depth_compare_to_vivo(directory, nb_t=500, in_vivo_depth=4.5):
+def define_time_depth_compare_to_vivo(directory, nb_t=200, in_vivo_depth=4.5):
     """Define the time when the depth is the closest from in vivo depth.
     """
     depth_0 = define_depth(directory, 0, ['z', 'x'])

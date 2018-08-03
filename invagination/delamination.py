@@ -74,6 +74,9 @@ def delamination(sheet, manager, face_id,
     if face is None:
         return
 
+    if sheet.face_df.loc[face, 'is_relaxation']:
+        relaxation(sheet, face, contract_rate)
+
     face_area = sheet.face_df.loc[face, 'area']
     num_sides = sheet.face_df.loc[face, 'num_sides']
 
@@ -89,7 +92,7 @@ def delamination(sheet, manager, face_id,
                  (contract_rate ** (1 / 2 ** neighbor['order']),
                   critical_area, 50))  # TODO: check this
                 for _, neighbor in neighbors.iterrows()
-                ])
+            ])
         done = False
 
     elif face_area <= critical_area:
@@ -107,6 +110,17 @@ def delamination(sheet, manager, face_id,
 
     if not done:
         manager.append(delamination, face_id, kwargs=settings)
+
+
+def relaxation(sheet, face, contractility_decrease):
+
+    initial_contractility = 1.12
+    new_contractility = sheet.face_df.loc[
+        face, 'contractility'] / contractility_decrease
+
+    if new_contractility >= (initial_contractility / 2):
+        sheet.face_df.loc[face, 'contractility'] = new_contractility
+        sheet.face_df.loc[face, 'prefered_area'] *= contractility_decrease
 
 
 def contraction_neighbours(sheet, manager, face_id,
