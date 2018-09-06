@@ -248,7 +248,7 @@ def save_sagittal_plot(dirname, start=0, step=5, min_slice=-5, max_slice=5):
         plt.close(fig)
 
 
-def save_3_axis_plot(dirname, start=0, step=1):
+def save_3_axis_plot(dirname, start=0, step=1, extension='png'):
     """ Save 3 view plot of the sheet
 
     Create 3 view plot of the sheet :
@@ -282,7 +282,7 @@ def save_3_axis_plot(dirname, start=0, step=1):
             sheet, 'is_mesoderm')
 
         fig.savefig(os.path.join(dirname_multiple_view,
-                                 'invagination_' + str(t)) + '.png')
+                                 'invagination_' + str(t)) + '.' + extension)
         plt.clf()
         plt.close("all")
 
