@@ -67,16 +67,17 @@ def define_depth(directory, t, coord=['x', 'y'],
     return depth
 
 
-def define_time_max_depth(directory, nb_t=200):
+def define_time_max_depth(directory, nb_t=200, xmin=-20, xmax=20, ymin=-2, ymax=2):
     """Define time and depth where the depths
     is maximal in a directory
     """
-    depth_0 = define_depth(directory, 0, ['z', 'x'])
+    depth_0 = define_depth(directory, 0, ['z', 'x'], xmin, xmax, ymin, ymax)
 
     depths = []
     for t in range(0, nb_t):
         try:
-            depths.append(depth_0 - define_depth(directory, t, ['z', 'x']))
+            depths.append(depth_0 - define_depth(directory, t, ['z', 'x'],
+                                                 xmin, xmax, ymin, ymax))
         except Exception:
             depths.append(0)
             warnings.warn(
@@ -86,14 +87,16 @@ def define_time_max_depth(directory, nb_t=200):
     return time, max(depths)
 
 
-def define_time_depth_compare_to_vivo(directory, nb_t=200, in_vivo_depth=4.5):
+def define_time_depth_compare_to_vivo(directory, nb_t=200, in_vivo_depth=4.5,
+                                      xmin=-20, xmax=20, ymin=-2, ymax=2):
     """Define the time when the depth is the closest from in vivo depth.
     """
-    depth_0 = define_depth(directory, 0, ['z', 'x'])
+    depth_0 = define_depth(directory, 0, ['z', 'x'], xmin, xmax, ymin, ymax)
 
     depths = []
     for t in range(0, nb_t):
-        depths.append(depth_0 - define_depth(directory, t, ['z', 'x']))
+        depths.append(depth_0 - define_depth(directory, t, ['z', 'x'],
+                                             xmin, xmax, ymin, ymax))
 
     depths = [0 if math.isnan(x) else x for x in depths]
 
