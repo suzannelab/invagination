@@ -611,3 +611,11 @@ test0VStest1\.csv
 test2VStest3\.csv
 
 test4VStest5\.csv
+
+notebooks/ablated_one\.obj
+
+notebooks/ablated_two\.obj
+
+TEST5_simul_15_coupe_50\.png
+
+data/hf5/ellipsoid_sheet_init_without_gradient\.hf5
