@@ -35,13 +35,14 @@ class EllipsoidGeometry(SheetGeometry):
 
     @staticmethod
     def update_vol(eptm):
+        for c in 'xyz':
+            eptm.edge_df['c'+c] = 0
         BulkGeometry.update_vol(eptm)
 
     @staticmethod
     def scale(eptm, scale, coords):
         SheetGeometry.scale(eptm, scale, coords)
         eptm.settings['abc'] = [u * scale for u in eptm.settings['abc']]
-
 
 
 class VitellineElasticity(effectors.AbstractEffector):
