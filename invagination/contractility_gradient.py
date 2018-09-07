@@ -71,21 +71,12 @@ def constriction(sheet, manager, face_id,
                 current_traction = current_traction + 1
                 ab_pull(sheet, face, radial_tension, True)
 
-    manager.append(constriction, face_id,
-                   (contract_rate,
-                    sheet.settings['delamination']['critical_area'],
-                    sheet.settings['delamination']['radial_tension'],
-                    sheet.settings['delamination']['nb_iteration'],
-                    sheet.settings['delamination']['nb_iteration_max'],
-                    sheet.settings['delamination']['contract_neighbors'],
-                    sheet.settings['delamination'][
-                        'critical_area_neighbors'],
-                    sheet.settings['delamination']['contract_span'],
-                    sheet.settings['delamination']['basal_contract_rate'],
-                    current_traction,
-                    max_traction,
-                    sheet.settings['delamination']['geom']
-                    ))
+    delam_kwargs = sheet.settings['delamination'].copy()
+    delam_kwargs.update({'contract_rate': contract_rate,
+                         'current_traction': current_traction,
+                         'max_traction': max_traction})
+
+    manager.append(constriction, face_id, (), delam_kwargs)
 
 
 def increase_linear_tension(sheet, face, line_tension, geom=SheetGeometry):

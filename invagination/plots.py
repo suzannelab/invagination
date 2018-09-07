@@ -39,6 +39,8 @@ def mesoderm_position(sheet, mesoderm_cells):
             'o', alpha=0.8, ms=5)
 
     fig.set_size_inches(24, 6)
+    return fig, axes
+
 
 
 def sagittal_view(sheet, min_slice, max_slice, face_mask=None,
