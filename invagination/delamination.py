@@ -92,20 +92,12 @@ def delamination(
             neighbors = sheet.get_neighborhood(face, contract_span).dropna()
             neighbors["id"] = sheet.face_df.loc[neighbors.face, "id"].values
 
-            manager.extend(
-                [
-                    (
-                        neighbors_contraction,
-                        neighbor["id"],
-                        (
-                            contract_rate ** (1 / 2 ** neighbor["order"]),
-                            critical_area,
-                            50,
-                        ),
-                    )  # TODO: check this
-                    for _, neighbor in neighbors.iterrows()
-                ]
-            )
+            manager.extend([
+                (contraction_neighbours, neighbor['id'],
+                 (contract_rate ** (1 / 2 ** neighbor['order']),
+                  critical_area, 50))  # TODO: check this
+                for _, neighbor in neighbors.iterrows()
+                ])
         done = False
 
     elif face_area <= critical_area:
