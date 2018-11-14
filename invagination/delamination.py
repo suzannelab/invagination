@@ -1,6 +1,5 @@
 """
 Delamination behavior in a 2.5D sheet
-
 """
 
 import random
@@ -27,16 +26,13 @@ def delamination(
     contraction_column="contractility",
 ):
     """Delamination process
-
     This function corresponds to the process called "apical constriction"
     in the manuscript
-
     The cell undergoing delamination first contracts its apical
     area until it reaches a critical area, at which point it starts
     undergoing rearangements with its neighbors, performing
     successive type 1 transitions until the face has only 3 sides,
     when it disepears.
-
     Parameters
     ----------
     sheet : a :class:`tyssue.sheet` object
@@ -60,7 +56,6 @@ def delamination(
        rank of neighbors contracting if contract_neighbor is True. Contraction
        rate for the neighbors is equal to `contract_rate` devided by
        the rank.
-
     """
     settings = {
         "contract_rate": contract_rate,
@@ -154,7 +149,6 @@ def type1_transition(sheet, manager, face_id, critical_length=0.3, geom=SheetGeo
     """Custom type 1 transition event that tests if
     the the shorter edge of the face is smaller than
     the critical length.
-
     """
     face = sheet.idx_lookup(face_id, "face")
     if face is None:
@@ -175,15 +169,12 @@ def face_elimination(sheet, manager, face_id, geom=SheetGeometry):
 
 def check_tri_faces(sheet, manager):
     """Three neighbourghs cell elimination
-
     Add all cells with three neighbourghs in the manager
     to be eliminated at the next time step.
-
     Parameters
     ----------
     sheet : a :class:`tyssue.sheet` object
     manager : a :class:`tyssue.events.EventManager` object
-
     """
 
     tri_faces = sheet.face_df[
@@ -212,7 +203,6 @@ def check_enter_in_process(
 
 def gaussian(x, base=0, amp=0.8, width=0.7, n=2):
     """Gaussian or Gaussian like function
-
     Parameters
     ----------
     """
@@ -247,7 +237,6 @@ def enter_in_process(sheet, f, base=0.003, amp=0.5, width=2.5, n=6):
 def define_mesoderm(sheet, a=145.0, b=40.0, coords=["x", "z", "y"]):
     """
     Define an oval area that will become the mesoderm.
-
     a: radius on the first-axis
     b: radius on the second-axis
     """
