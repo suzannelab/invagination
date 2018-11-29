@@ -5,7 +5,7 @@ Delamination behavior in a 2.5D sheet
 import random
 import numpy as np
 
-from tyssue.behaviors.sheet.delamination_events import delamination
+from tyssue.behaviors.sheet.delamination_events import (delamination, constriction)
 
 
 def check_enter_in_process(
@@ -18,7 +18,7 @@ def check_enter_in_process(
     """
     for f in mesoderm:
         if enter_in_process(sheet, f, base, amp, largeur, density_proba):
-            manager.append(delamination, face_id=f, **sheet.settings["delamination"])
+            manager.append(constriction, face_id=f, **sheet.settings["delamination"])
 
 
 def gaussian(x, base=0, amp=0.8, width=0.7, n=2):
