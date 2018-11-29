@@ -9,9 +9,8 @@ from tyssue.behaviors.sheet.delamination_events import delamination
 
 
 def check_enter_in_process(
-        sheet, manager, mesoderm,
-        t=1, base=0.003, amp=0.5,
-        largeur=2.5, density_proba=6):
+    sheet, manager, mesoderm, base=0.003, amp=0.5, largeur=2.5, density_proba=6
+):
     """
     Check if face in mesoderm can enter in the process.
     If cell enter in the process, it will be removed from list_cell
@@ -19,8 +18,7 @@ def check_enter_in_process(
     """
     for f in mesoderm:
         if enter_in_process(sheet, f, base, amp, largeur, density_proba):
-            manager.append(delamination, f,
-                           kwargs=sheet.settings["delamination"])
+            manager.append(delamination, face_id=f, **sheet.settings["delamination"])
 
 
 def gaussian(x, base=0, amp=0.8, width=0.7, n=2):
@@ -72,6 +70,5 @@ def define_mesoderm(sheet, a=145.0, b=40.0, coords=["x", "z", "y"]):
     sheet.face_df["is_mesoderm"] = (radius <= 1) & (height > 0)
 
     # Remove not active face
-    face_not_active = sheet.edge_df[
-        ~sheet.edge_df.is_active.astype(bool)].face.unique()
+    face_not_active = sheet.edge_df[~sheet.edge_df.is_active.astype(bool)].face.unique()
     sheet.face_df.loc[face_not_active, "is_mesoderm"] = False
