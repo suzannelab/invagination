@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from tyssue import SheetGeometry, BulkGeometry
+from tyssue import SheetGeometry, BulkGeometry, ClosedMonolayerGeometry
 from tyssue.utils.utils import _to_3d, to_nd
 from tyssue.dynamics.sheet_gradients import height_grad
 from tyssue.dynamics import units, effectors, model_factory
@@ -35,9 +35,12 @@ class EllipsoidGeometry(SheetGeometry):
 
     @staticmethod
     def update_vol(eptm):
-        for c in 'xyz':
-            eptm.edge_df['c'+c] = 0
-        BulkGeometry.update_vol(eptm)
+
+        if "segment" in eptm.edge_df:
+            for c in 'xyz':
+                eptm.edge_df['c' + c] = 0
+            ClosedMonolayerGeometry.update_vol(eptm)
+        ClosedMonolayerGeometry.update_lumen_vol(eptm)
 
     @staticmethod
     def scale(eptm, scale, coords):
@@ -100,5 +103,6 @@ model = model_factory(
     VitellineElasticity,
     effectors.FaceContractility,
     effectors.FaceAreaElasticity,
-    effectors.CellVolumeElasticity,
+    #effectors.CellVolumeElasticity,
+    effectors.LumenVolumeElasticity,
     ], effectors.FaceAreaElasticity)

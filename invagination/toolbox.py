@@ -12,7 +12,7 @@ from tyssue import Sheet, config
 from tyssue.io import hdf5
 
 
-def open_sheet(dirname, t):
+def open_sheet(dirname, t, data_names=['vert', 'edge', 'face', 'cell']):
     """Open hdf5 file
 
     Open HDF5 file correspond to t time from dirname directory.
@@ -26,7 +26,7 @@ def open_sheet(dirname, t):
     """
     file_name = 'invagination_{:04d}.hf5'.format(t)
     dsets = hdf5.load_datasets(os.path.join(dirname, file_name),
-                               data_names=['vert', 'edge', 'face', 'cell'])
+                               data_names=data_names)
 
     specs = config.geometry.cylindrical_sheet()
     sheet = Sheet('ellipse', dsets, specs)

@@ -5,7 +5,7 @@ Delamination behavior in a 2.5D sheet
 import random
 import numpy as np
 
-from tyssue.behaviors.sheet.delamination_events import (delamination, constriction)
+from tyssue.behaviors.sheet.delamination_events import (constriction)
 
 
 def check_enter_in_process(
