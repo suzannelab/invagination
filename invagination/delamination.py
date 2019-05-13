@@ -19,53 +19,6 @@ from tyssue.behaviors.sheet.basic_events import check_tri_faces
 from tyssue.behaviors.sheet.delamination_events import (constriction)
 
 
-def check_enter_in_process(
-    sheet, manager, mesoderm, base=0.003, amp=0.5, largeur=2.5, density_proba=6
-):
-    """
-    Check if face in mesoderm can enter in the process.
-    If cell enter in the process, it will be removed from list_cell
-    and add to the manager with it's process.
-    """
-    for f in mesoderm:
-        if enter_in_process(sheet, f, base, amp, largeur, density_proba):
-            manager.append(constriction, face_id=f, **
-                           sheet.settings["delamination"])
-
-
-def gaussian(x, base=0, amp=0.8, width=0.7, n=2):
-    """Gaussian or Gaussian like function
-    Parameters
-    ----------
-    """
-    # xs = sheet.face_df.loc[mesoderm, 'x']
-    # w = width * xs.ptp() / 2.
-    gauss = base + amp * np.exp(-abs(x) ** n / width ** n)
-
-    return gauss
-
-
-def enter_in_process(sheet, f, base=0.003, amp=0.5, width=2.5, n=6):
-    """
-    Define if the face can enter in a process following a gaussian curve.
-    """
-    face = sheet.idx_lookup(f, "face")
-    if face is None:
-        return False
-
-    if sheet.face_df.loc[face, "enter_in_process"] == 1:
-        return False
-
-    x = sheet.face_df.loc[face, "x"]
-    gauss_position = gaussian(x, base, amp, width, n)
-    aleatory_number = random.uniform(0, 1)
-
-    if aleatory_number < gauss_position:
-        sheet.face_df.loc[face, "enter_in_process"] = 1
-        return True
-    return False
-
-
 model = model_factory(
     [
         RadialTension,
@@ -77,10 +30,70 @@ model = model_factory(
     ], effectors.FaceAreaElasticity)
 
 
+def constriction_rate(x, max_constriction_rate, k, w):
+    """Calculate constriction rate of a cell according to its position in the tissue.
+    Parameters
+    ----------
+    x: position of cell in the tissue
+    max_constriction: maximal constriction cell for all cell in the tissue.
+    k: steepness coefficient characterizing the profile decay
+    w: width of the profile
+    """
+
+    c_rate = (1 +
+              (max_constriction_rate - 1) *
+              ((1 + np.exp(-k * w)) /
+               (1 + np.exp(k * (abs(x) - w)))))
+
+    return c_rate
+
+
+def apical_cut(sheet, pos_z):
+    """
+    Define cell which are cut to simulate apical ablation.
+    Parameters
+    ----------
+    sheet:
+    pos_z: position where mesodermal cell are "cut"
+    """
+
+    srce_z = sheet.upcast_srce(sheet.vert_df['z'])
+    trgt_z = sheet.upcast_trgt(sheet.vert_df['z'])
+    srce_y = sheet.upcast_srce(sheet.vert_df['y'])
+    trgt_y = sheet.upcast_trgt(sheet.vert_df['y'])
+
+    meso_edge = sheet.upcast_face(sheet.face_df['is_mesoderm'])
+    cut_edges = sheet.edge_df[(((srce_z < pos_z) & (trgt_z >= pos_z))
+                               | ((srce_z >= pos_z) & (trgt_z <= pos_z)))
+                              & meso_edge & ((srce_y > 0) & (trgt_y > 0))]
+
+    cut_faces = cut_edges['face'].unique()
+
+    sheet.face_df.loc[cut_faces, [
+        'contractility', 'area_elasticity']] = 1e-2
+
+    sheet.face_df.loc[cut_faces, 'is_mesoderm'] = False
+
+
 def delamination_process(sim_save_dir, sheet, max_contractility_rate, critical_area,
                          radial_tension, nb_iteraction_max,
                          profile_width, k, iteration,
                          cable_cut=False, apical_cut=False, nb_apical_cut=2):
+
+    """
+    Initiate simulation before running according to parameters.
+    Parameters
+    ----------
+    dirname: saving directory to hf5 file
+    sheet:
+    max_contractility_rate: maximal constriction cell for all cell in the tissue.
+    k: steepness coefficient characterizing the profile decay
+    profile_width: width of the profile
+    cable_cut: True/False, define if apico-basal force is exerted
+    apical_cut: True/False, define if a domain of cell is isolated
+    nb_apical_cut: Define number of apical cut (1 or 2)
+    """
+
     # Directory definition
     dirname = '{}_contractility_{}_critical_area_{}_radialtension_{}'.format(
         max_contractility_rate, critical_area, radial_tension, iteration)
@@ -129,6 +142,23 @@ def delamination_process(sim_save_dir, sheet, max_contractility_rate, critical_a
 def run_sim(dirname, solver, solver_kw, sheet, geom, model,
             max_contractility_rate, profile_width, k,
             cable_cut=False, apical_cut=False, nb_apical_cut=2):
+    """
+    Run simulation according to parameters.
+    Parameters
+    ----------
+    dirname: saving directory to hf5 file
+    solver:
+    solver_kw: solver arguments
+    sheet:
+    geom:
+    model:
+    max_contractility_rate: maximal constriction cell for all cell in the tissue.
+    k: steepness coefficient characterizing the profile decay
+    profile_width: width of the profile
+    cable_cut: True/False, define if apico-basal force is exerted
+    apical_cut: True/False, define if a domain of cell is isolated
+    nb_apical_cut: Define number of apical cut (1 or 2)
+    """
 
     # Initiate manager
     manager = EventManager('face')
@@ -141,47 +171,17 @@ def run_sim(dirname, solver, solver_kw, sheet, geom, model,
     if apical_cut:
         if nb_apical_cut == 1:
             # posterior apical ablation
-            z_ablat = 45.
-
-            srce_z = sheet.upcast_srce(sheet.vert_df['z'])
-            trgt_z = sheet.upcast_trgt(sheet.vert_df['z'])
-            srce_y = sheet.upcast_srce(sheet.vert_df['y'])
-            trgt_y = sheet.upcast_trgt(sheet.vert_df['y'])
-
-            meso_edge = sheet.upcast_face(sheet.face_df['is_mesoderm'])
-            cut_edges = sheet.edge_df[(((srce_z < z_ablat) & (trgt_z >= z_ablat))
-                                       | ((srce_z >= z_ablat) & (trgt_z <= z_ablat)))
-                                      & meso_edge & ((srce_y > 0) & (trgt_y > 0))]
-            cut_faces = cut_edges['face'].unique()
-            sheet.face_df.loc[cut_faces, [
-                'contractility', 'area_elasticity']] = 1e-2
+            apical_cut(sheet, 45.)
 
         elif nb_apical_cut == 2:
             # anterior & posterior apical ablation
-            z_ablat_post = 45.
-            z_ablat_ant = -45.
-
-            srce_z = sheet.upcast_srce(sheet.vert_df['z'])
-            trgt_z = sheet.upcast_trgt(sheet.vert_df['z'])
-            srce_y = sheet.upcast_srce(sheet.vert_df['y'])
-            trgt_y = sheet.upcast_trgt(sheet.vert_df['y'])
-
-            meso_edge = sheet.upcast_face(sheet.face_df['is_mesoderm'])
-            cut_edges = sheet.edge_df[(((srce_z < z_ablat_post) & (trgt_z >= z_ablat_post))
-                                       | ((srce_z >= z_ablat_post) & (trgt_z <= z_ablat_post))
-                                       | ((srce_z < z_ablat_ant) & (trgt_z >= z_ablat_ant))
-                                       | ((srce_z >= z_ablat_ant) & (trgt_z <= z_ablat_ant)))
-                                      & meso_edge & ((srce_y > 0) & (trgt_y > 0))]
-            cut_faces = cut_edges['face'].unique()
-            sheet.face_df.loc[cut_faces, [
-                'contractility', 'area_elasticity']] = 1e-2
-            sheet.face_df.loc[cut_faces, 'is_mesoderm'] = False
+            apical_cut(sheet, 45.)
+            apical_cut(sheet, -45.)
 
     # Add all cells in constriction process
     for f in sheet.face_df[sheet.face_df['is_mesoderm']].index:
         x = sheet.face_df.loc[f, 'x']
-        c_rate = 1 + (max_contractility_rate - 1) * ((1 + np.exp(-k * profile_width)) /
-                                                     (1 + np.exp(k * (abs(x) - profile_width))))
+        c_rate = constriction_rate(x, max_contractility_rate, k, profile_width)
 
         sheet.face_df.loc[f, 'contract_rate'] = c_rate
         delam_kwargs = sheet.settings["delamination"].copy()
@@ -225,17 +225,14 @@ def run_sim(dirname, solver, solver_kw, sheet, geom, model,
             ['x', 'y']] += np.random.normal(scale=1e-3, size=(sheet.Nv, 2))
         geom.update_all(sheet)
 
+        # Save result in each time step.
         figname = os.path.join(
             dirname, 'invagination_{:04d}.png'.format(t))
         hdfname = figname[:-3] + 'hf5'
         hdf5.save_datasets(hdfname, sheet)
 
-        # Add cells with initially 3 neighbourghs to be eliminated
+        # Add cells with initially 3 neighbourghs to be eliminated.
         check_tri_faces(sheet, manager)
-        # Add T1 transition for face with at least one edge shorter than critical length
-        #[manager.append(type1_transition, f, kwargs=sheet.settings['T1']) for f in sheet.edge_df[
-        # sheet.edge_df['length'] <
-        # sheet.settings['T1']['critical_length']]['face'].unique()]
 
         manager.update()
         t += 1

@@ -115,7 +115,7 @@ def initiate_ellipsoid(dataset_path, json_path):
     Create ellipsoid tissue as a sheet with mesodermal cells
 
     dataset_path: initial hf45 file
-    b: json spec file
+    json_path: json spec file
     """
     dsets = hdf5.load_datasets(dataset_path,
                                data_names=['vert', 'edge', 'face'])
