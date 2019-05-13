@@ -1,0 +1,9 @@
+Simulations_Ablations contains simulations in figure 9 and Supplementary figure S6. It reproduces experiments made in drosophila in vivo embryo in figure 6 and Supplementary figure S3.
+
+Simulations_FiguresPrincipale contains simulations in figure 7-8 and Supplementary figure S4 pannel c and d.
+
+Simulations_GaussianWidthTest contains simulations in Supplementary figure S4 pannel b. It tests differents values of width to the profile of apical constriction rate. 
+
+Simulations_YolkElasticity contains simulations in Supplementary figure S4 pannel a. It tests differents value of yolk compression. 
+
+SmallEllipsoidInvagination contains a small ellipsoid to run simulation in a small number of cells. 
