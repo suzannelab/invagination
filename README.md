@@ -2,6 +2,7 @@
 
 ![Sample output from the model](data/svg/header.svg)
 
+[![DOI](https://zenodo.org/badge/185421680.svg)](https://zenodo.org/badge/latestdoi/185421680)
 
 This is a mesoderm invagination simulation package for the article:
 
@@ -18,7 +19,7 @@ The article is currently under revision.
 ## Dependencies
 
 - python > 3.6
-- tyssue >= 0.2.1
+- tyssue >= 0.3.3
 
 
 ## Installation
