@@ -4,6 +4,7 @@
 
 [![DOI](https://zenodo.org/badge/185421680.svg)](https://zenodo.org/badge/latestdoi/185421680)
 
+
 This is a mesoderm invagination simulation package for the article:
 
 **Epithelio-mesenchymal transition generates an apico-basal driving force required for tissue remodeling**
@@ -15,6 +16,11 @@ Mélanie Gracia <sup>1</sup>, Corinne Benassayag <sup>1</sup>, Sophie Theis <sup
 <sup>2</sup>  Morphogénie Logiciels, 32110 St Martin d’Armagnac, France
 
 The article is currently under revision.
+
+## Try it with my binder by clicking the badge bellow:
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/suzannelab/invagination/master?filepath=notebooks%2FIndex.ipynb)
+
 
 ## Dependencies
 
