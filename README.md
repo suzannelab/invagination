@@ -6,16 +6,12 @@
 
 
 This is a mesoderm invagination simulation package for the article:
+**Mechanical impact of epithelial−mesenchymal transition on epithelial morphogenesis in Drosophila**
 
-**Epithelio-mesenchymal transition generates an apico-basal driving force required for tissue remodeling**
+Mélanie Gracia, Sophie Theis, Amsha Proag, Guillaume Gay, Corinne Benassayag, and Magali Suzanne https://www.nature.com/articles/s41467-019-10720-0
 
-Mélanie Gracia <sup>1</sup>, Corinne Benassayag <sup>1</sup>, Sophie Theis <sup>1, 2</sup>, Amsha Proag <sup>1</sup>, Guillaume Gay <sup>2</sup> and Magali Suzanne <sup>1</sup>
 
-<sup>1</sup> LBCMCP, Centre de Biologie Intégrative (CBI), Université de Toulouse, CNRS, UPS, France
 
-<sup>2</sup>  Morphogénie Logiciels, 32110 St Martin d’Armagnac, France
-
-The article is currently under revision.
 
 ## Try it with my binder by clicking the badge bellow:
 
