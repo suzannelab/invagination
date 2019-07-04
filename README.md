@@ -6,10 +6,10 @@
 
 
 This is a mesoderm invagination simulation package for the article:
-**Mechanical impact of epithelial−mesenchymal transition on epithelial morphogenesis in Drosophila**
+
+### Mechanical impact of epithelial−mesenchymal transition on epithelial morphogenesis in Drosophila
 
 Mélanie Gracia, Sophie Theis, Amsha Proag, Guillaume Gay, Corinne Benassayag, and Magali Suzanne https://www.nature.com/articles/s41467-019-10720-0
-
 
 
 
