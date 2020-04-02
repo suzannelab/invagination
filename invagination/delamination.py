@@ -17,7 +17,6 @@ from tyssue.behaviors.event_manager import EventManager
 from tyssue.behaviors.sheet.basic_events import check_tri_faces
 from tyssue.behaviors.sheet.delamination_events import constriction
 
-
 model = model_factory(
     [
         RadialTension,
@@ -48,7 +47,7 @@ def constriction_rate(x, max_constriction_rate, k, w):
     return c_rate
 
 
-def apical_cut(sheet, pos_z):
+def apical_cut_pos(sheet, pos_z):
     """
     Define cell which are cut to simulate apical ablation.
     Parameters
@@ -210,12 +209,12 @@ def run_sim(
     if apical_cut:
         if nb_apical_cut == 1:
             # posterior apical ablation
-            apical_cut(sheet, 45.0)
+            apical_cut_pos(sheet, 45.0)
 
         elif nb_apical_cut == 2:
             # anterior & posterior apical ablation
-            apical_cut(sheet, 45.0)
-            apical_cut(sheet, -45.0)
+            apical_cut_pos(sheet, 45.0)
+            apical_cut_pos(sheet, -45.0)
 
     # Add all cells in constriction process
     for f in sheet.face_df[sheet.face_df["is_mesoderm"]].index:
