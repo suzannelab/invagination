@@ -17,9 +17,9 @@ class VitellineElasticity(effectors.AbstractEffector):
     element = 'vert'
     specs = {
         'vert': {
-            'vitelline_K',
-            'is_active',
-            'delta_rho'}
+            'vitelline_K': 1.0,
+            'is_active': 1.0,
+            'delta_rho': 1.0}
     }  # distance to the vitelline membrane
 
     @staticmethod
@@ -41,9 +41,9 @@ class RadialTension(effectors.AbstractEffector):
     magnitude = 'radial_tension'
     label = 'Apical basal tension'
     element = 'vert'
-    specs = {'vert': {'is_active',
-                      'height',
-                      'radial_tension'}}
+    specs = {'vert': {'is_active': 1,
+                      'height': 1.0,
+                      'radial_tension': 0.0}}
 
     @staticmethod
     def energy(eptm):
