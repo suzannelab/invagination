@@ -42,11 +42,11 @@ def git_version():
 
     try:
         out = _minimal_ext_cmd(["git", "rev-parse", "HEAD"])
-        GIT_REVISION = out.strip().decode("ascii")
+        git_revision = out.strip().decode("ascii")
     except OSError:
-        GIT_REVISION = "Unknown"
+        git_revision = "Unknown"
 
-    return GIT_REVISION
+    return git_revision
 
 
 def get_version_info():
@@ -54,24 +54,23 @@ def get_version_info():
     # otherwise the import of tyssue.version messes up the build under Python 3.
     FULLVERSION = VERSION
     if os.path.exists(".git"):
-        GIT_REVISION = git_version()
+        git_revision = git_version()
     elif os.path.exists("invagination/version.py"):
         # must be a source distribution, use existing version file
-        try:
-            from numpy.version import git_revision as GIT_REVISION
-        except ImportError:
-            raise ImportError(
-                "Unable to import git_revision. Try removing "
-                "numpy/version.py and the build directory "
-                "before building."
-            )
+        # read from it instead of importing to avoid importing
+        # the whole package
+        with open("invagination/version.py", "r", encoding="utf-8") as version:
+            for line in version.readlines():
+                if line.startswith("git_revision"):
+                    git_revision = line.split("=")[-1][2:-2]
+                    break
     else:
-        GIT_REVISION = "Unknown"
+        git_revision = "Unknown"
 
     if not ISRELEASED:
-        FULLVERSION += ".dev0+" + GIT_REVISION[:7]
+        FULLVERSION += ".dev0+" + git_revision[:7]
 
-    return FULLVERSION, GIT_REVISION
+    return FULLVERSION, git_revision
 
 
 def write_version_py(filename="invagination/version.py"):
@@ -115,18 +114,18 @@ if __name__ == "__main__":
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
-        classifiers=[
-            "Development Status :: 4 - Beta",
-            "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: MPL v2.0",
-            "Natural Language :: English",
-            "Operating System :: MacOS",
-            "Operating System :: Microsoft",
-            "Operating System :: POSIX :: Linux",
-            "Programming Language :: Python :: 3.6",
-            "Topic :: Scientific/Engineering :: Bio-Informatics",
-            "Topic :: Scientific/Engineering :: Medical Science Apps",
-        ],
+        #classifiers=[
+        #    "Development Status :: 4 - Beta",
+        #    "Intended Audience :: Science/Research",
+        #    "License :: OSI Approved :: MPL v2.0",
+        #    "Natural Language :: English",
+        #    "Operating System :: MacOS",
+        #    "Operating System :: Microsoft",
+        #    "Operating System :: POSIX :: Linux",
+        #    "Programming Language :: Python :: 3.6",
+        #    "Topic :: Scientific/Engineering :: Bio-Informatics",
+        #    "Topic :: Scientific/Engineering :: Medical Science Apps",
+        #],
         packages=find_packages(),
         package_data={"invagination": files},
         include_package_data=True,
