@@ -46,6 +46,11 @@ $ python setup.py install
 
 - or by downloading https://github.com/DamCB/invagination/archive/master.zip ,  uncompressing the archive and running `python setup.py install` in the root directory.
 
+- or via 
+```bash
+pip install invagination==0.0.2
+```
+
 ## Licence
 
 This work is free software, published under the MPLv2 licence, see LICENCE for details.
